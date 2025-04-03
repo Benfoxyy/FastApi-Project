@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, Boolean
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from core.config import settings
 
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./sqlite.db'
+SQLALCHEMY_DATABASE_URL = settings.SQLALCHEMY_DATABASE_URL
 # SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
 # for postgres or other relational databases
@@ -16,14 +17,6 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-
-class Task(Base):
-    __tablename__ = 'tasks'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(30))
-    description = Column(Text)
-    is_done = Column(Boolean, default=False)
 
 def get_db():
     db = SessionLocal()
