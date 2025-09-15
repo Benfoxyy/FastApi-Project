@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Live Football Score</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    .score { font-size: 2.5rem; margin: 0.5rem 0; }
+    .teams { font-size: 1.25rem; color: #555; }
+    .status { margin-top: 0.5rem; }
+    ul { margin-top: 1rem; padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>Live Football Score</h1>
+  <div class="teams" id="teams">-</div>
+  <div class="score" id="score">0 - 0</div>
+  <div class="status" id="status">Waiting for kickoff…</div>
+  <div class="status" id="minute">0'</div>
+  <h3>Events</h3>
+  <ul id="feed"></ul>
+
+  <script>
+    // Change to your server if different
+    const src = new EventSource("http://127.0.0.1:8000/live-score");
+
+    function addFeed(text) {
+      const li = document.createElement("li");
+      li.textContent = text;
+      document.getElementById("feed").prepend(li);
+    }
+
+    // Named event: "score"
+// Named event: "score"
+src.addEventListener("score", (e) => {
+  const data = JSON.parse(e.data);
+  document.getElementById("teams").textContent = `${data.home} vs ${data.away}`;
+  document.getElementById("score").textContent = `${data.score[0]} - ${data.score[1]}`;
+  document.getElementById("status").textContent = data.status || "";
+  document.getElementById("minute").textContent = `${data.minute}'`;
+  addFeed(`${data.status} (${data.home} ${data.score[0]} - ${data.score[1]} ${data.away})`);
+});
+
+// Named event: "tick" (clock updates)
+src.addEventListener("tick", (e) => {
+  const data = JSON.parse(e.data);
+  document.getElementById("minute").textContent = `${data.minute}'`;
+});
+
+
+    src.onerror = () => {
+      document.getElementById("status").textContent = "Connection lost. Retrying…";
+    };
+  </script>
+</body>
+</html>
