@@ -1,43 +1,24 @@
-from fastapi import FastAPI, Depends, status, HTTPException
-from database import Base, engine, get_db
-from models import Task
-from schemas import TaskCreate, TaskRead
-from sqlalchemy.orm import Session
-from typing import List
+from fastapi import FastAPI
+from tasks.routes import router as tasks_router
 
-Base.metadata.create_all(bind=engine)
-app = FastAPI(title="My API", version="1.0.0")
+app = FastAPI(
+    title="Todo Application",
+    description=(
+        "A simple and efficient Todo management API built with FastAPI. "
+        "This API allows users to create, retrieve, update, and delete tasks. "
+        "It is designed for task tracking and productivity improvement."
+    ),
+    version="1.0.0",
+    terms_of_service="https://example.com/terms/",
+    contact={
+        "name": "Ali Bigdeli",
+        "url": "https://thealibigdeli.ir",
+        "email": "benxfoxy@gmail.com",
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    }
+)
 
-@app.get("/", status_code=status.HTTP_200_OK, response_model=List[TaskRead])
-def read_task(db: Session = Depends(get_db)):
-    task = db.query(Task).all()
-    return task
-
-@app.post("/", status_code=status.HTTP_201_CREATED, response_model=TaskRead)
-def create_task(task: TaskCreate, db: Session = Depends(get_db)):
-    db_task = Task(title=task.title, description=task.description)
-    db.add(db_task)
-    db.commit()
-    db.refresh(db_task)
-    return db_task
-
-@app.put("/{task_id}", status_code=status.HTTP_200_OK, response_model=TaskRead)
-def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
-    db_task = db.query(Task).filter(Task.id == task_id).first()
-    if not db_task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
-    db_task.title = task.title
-    db_task.description = task.description
-    db.commit()
-    db.refresh(db_task)
-    return db_task
-
-@app.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_task(task_id: int, db: Session = Depends(get_db)):
-    task = db.query(Task).filter(Task.id == task_id).first()
-    if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
-    db.delete(task)
-    db.commit()
+app.include_router(tasks_router)
