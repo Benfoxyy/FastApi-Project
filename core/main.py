@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from tasks.routes import router as tasks_router
+from users.routes import router as users_router
 
 app = FastAPI(
     title="Todo Application",
@@ -22,3 +23,4 @@ app = FastAPI(
 )
 
 app.include_router(tasks_router)
+app.include_router(users_router)

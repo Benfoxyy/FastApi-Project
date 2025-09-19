@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from config.database import get_db
 from tasks.models import TaskModel
 
-router = APIRouter(tags=["tasks"])
+router = APIRouter(tags=["tasks"], prefix="/tasks")
 
 @router.get("/", response_model=List[TaskReadSchema])
 def read_task(db: Session = Depends(get_db)):
