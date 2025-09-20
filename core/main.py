@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from tasks.routes import router as tasks_router
 from users.routes import router as users_router
 
@@ -19,8 +20,10 @@ app = FastAPI(
     license_info={
         "name": "MIT License",
         "url": "https://opensource.org/licenses/MIT",
-    }
+    },
 )
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.include_router(tasks_router)
 app.include_router(users_router)

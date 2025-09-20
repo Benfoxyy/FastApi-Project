@@ -5,12 +5,13 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 class UserModel(Base):
-    __tablename__="users"
-    
+    __tablename__ = "users"
+
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     username = Column(String(50), nullable=False, unique=True, index=True)
-    password = Column(String(250    ), nullable=False)
+    password = Column(String(250), nullable=False)
     is_active = Column(Boolean, default=True)
     created_date = Column(DateTime(timezone=True), server_default=func.now())
 
